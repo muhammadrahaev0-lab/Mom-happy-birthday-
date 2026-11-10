@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>С днём рождения, Диляра! 🎉</title>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --pink:#ff5d8f; --rose:#ff9a9e; --gold:#ffc857; --plum:#6a1b4d; --cream:#fff5f7;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Nunito',system-ui,sans-serif;color:var(--plum);
+  background:linear-gradient(160deg,#fff0f5 0%,#ffe0ec 45%,#ffeedd 100%);
+  background-attachment:fixed; overflow-x:hidden; min-height:100vh;
+}
+h1,h2,.script{font-family:'Pacifico',cursive;font-weight:400}
+canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:50}
+
+/* ---------- Gift screen ---------- */
+#gift{
+  position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:radial-gradient(circle at 50% 40%,#ff9ac1,#d6336c 70%);color:#fff;text-align:center;padding:20px;
+  transition:opacity .9s ease, transform .9s ease;
+}
+#gift.gone{opacity:0;transform:scale(1.4);pointer-events:none}
+#gift h2{font-size:clamp(1.6rem,6vw,2.6rem);margin-bottom:10px;text-shadow:0 3px 12px rgba(0,0,0,.25)}
+#gift p{margin-bottom:28px;opacity:.9;font-weight:700}
+#giftbox{font-size:clamp(6rem,28vw,10rem);cursor:pointer;animation:wiggle 1.4s infinite;filter:drop-shadow(0 12px 18px rgba(0,0,0,.3));background:none;border:none}
+@keyframes wiggle{0%,100%{transform:rotate(0) scale(1)}20%{transform:rotate(-8deg) scale(1.05)}40%{transform:rotate(8deg) scale(1.05)}60%{transform:rotate(-5deg)}80%{transform:rotate(5deg)}}
+.tap{margin-top:20px;font-size:.95rem;animation:pulse 1.6s infinite}
+@keyframes pulse{50%{opacity:.4}}
+
+/* ---------- Floating hearts bg ---------- */
+.bgfloat{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.bgfloat span{position:absolute;bottom:-40px;opacity:.5;animation:rise linear infinite}
+@keyframes rise{to{transform:translateY(-115vh) rotate(40deg);opacity:0}}
+
+section{position:relative;z-index:1;padding:70px 20px;max-width:980px;margin:0 auto;text-align:center}
+
+/* ---------- Hero ---------- */
+#hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center}
+.date{display:inline-block;background:#fff;border-radius:999px;padding:8px 22px;font-weight:800;color:var(--pink);box-shadow:0 6px 20px rgba(255,93,143,.25);margin-bottom:22px}
+#hero h1{
+  font-size:clamp(2.2rem,9vw,5rem);line-height:1.2;
+  background:linear-gradient(90deg,#ff5d8f,#ff9a3c,#d6336c,#ff5d8f);background-size:300% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 5s linear infinite;
+}
+@keyframes shine{to{background-position:300% 0}}
+#typed{margin-top:22px;font-size:clamp(1.05rem,3.6vw,1.5rem);min-height:3.2em;max-width:640px}
+.caret{display:inline-block;width:2px;background:var(--plum);margin-left:2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.scroll{margin-top:30px;font-size:2rem;animation:bounce 1.6s infinite}
+@keyframes bounce{50%{transform:translateY(10px)}}
+
+/* ---------- Balloons ---------- */
+h2.title{font-size:clamp(1.7rem,6vw,2.6rem);margin-bottom:8px;color:var(--pink)}
+.sub{opacity:.75;margin-bottom:30px}
+#balloons{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 18px;min-height:190px}
+.balloon{
+  width:78px;height:100px;border-radius:50% 50% 48% 48%;position:relative;cursor:pointer;border:none;
+  animation:sway 3s ease-in-out infinite;box-shadow:inset -10px -12px 0 rgba(0,0,0,.12),inset 8px 8px 14px rgba(255,255,255,.45);
+  transition:transform .15s;
+}
+.balloon:hover{transform:scale(1.1)}
+.balloon::after{content:"";position:absolute;left:50%;bottom:-48px;width:2px;height:48px;background:rgba(106,27,77,.35)}
+.balloon::before{content:"";position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);border:6px solid transparent;border-bottom-color:inherit;border-top:0}
+@keyframes sway{50%{transform:translateY(-14px) rotate(4deg)}}
+.balloon.pop{animation:none;transform:scale(0);opacity:0;transition:.25s}
+#wish{
+  margin:34px auto 0;max-width:560px;min-height:80px;background:#fff;border-radius:22px;padding:22px 26px;
+  font-size:1.2rem;font-weight:700;box-shadow:0 10px 30px rgba(214,51,108,.18);
+}
+
+/* ---------- Reasons flip cards ---------- */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px;margin-top:10px}
+.card{perspective:900px;height:170px;cursor:pointer}
+.card .in{position:relative;width:100%;height:100%;transition:transform .7s;transform-style:preserve-3d}
+.card.flip .in{transform:rotateY(180deg)}
+.card .f,.card .b{
+  position:absolute;inset:0;backface-visibility:hidden;border-radius:22px;display:flex;align-items:center;justify-content:center;
+  padding:16px;font-weight:800;font-size:1.05rem;box-shadow:0 8px 24px rgba(106,27,77,.15)
+}
+.card .f{background:linear-gradient(135deg,#ff7eb3,#ff5d8f);color:#fff;font-size:2.6rem}
+.card .b{background:#fff;transform:rotateY(180deg);color:var(--plum)}
+
+/* ---------- Gallery ---------- */
+.gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}
+.photo{
+  background:#fff;padding:10px 10px 38px;border-radius:6px;box-shadow:0 10px 26px rgba(0,0,0,.18);
+  transition:transform .3s;position:relative
+}
+.photo:nth-child(odd){transform:rotate(-3deg)}
+.photo:nth-child(even){transform:rotate(3deg)}
+.photo:hover{transform:rotate(0) scale(1.05);z-index:2}
+.photo img,.photo .ph{width:100%;aspect-ratio:1;object-fit:cover;display:block;border-radius:3px}
+.photo .ph{display:flex;align-items:center;justify-content:center;font-size:3.6rem;background:linear-gradient(135deg,#ffd1dc,#ffe7b3)}
+.photo figcaption{position:absolute;bottom:8px;left:0;right:0;font-family:'Pacifico',cursive;font-size:.95rem;color:var(--pink)}
+
+/* ---------- Letter ---------- */
+.letter{
+  background:#fffdf7;border-radius:10px;padding:38px 30px;text-align:left;max-width:680px;margin:0 auto;line-height:1.75;font-size:1.08rem;
+  box-shadow:0 14px 40px rgba(106,27,77,.2);border-left:6px solid var(--pink);position:relative
+}
+.letter .script{font-size:1.7rem;color:var(--pink);margin-bottom:10px}
+.letter .sign{margin-top:18px;text-align:right;font-family:'Pacifico',cursive;color:var(--pink);font-size:1.3rem}
+
+/* ---------- Final ---------- */
+.big{
+  margin-top:24px;font-family:'Nunito',sans-serif;font-weight:800;font-size:1.2rem;border:none;cursor:pointer;color:#fff;
+  background:linear-gradient(135deg,#ff5d8f,#ff9a3c);padding:16px 34px;border-radius:999px;box-shadow:0 10px 26px rgba(255,93,143,.45);
+  transition:transform .15s
+}
+.big:hover{transform:scale(1.06)}
+.big:active{transform:scale(.96)}
+#cake{font-size:5rem;animation:bounce 2s infinite}
+footer{padding:40px 20px 70px;text-align:center;opacity:.7;position:relative;z-index:1}
+
+.reveal{opacity:0;transform:translateY(40px);transition:all .9s ease}
+.reveal.show{opacity:1;transform:none}
+</style>
+</head>
+<body>
+<canvas id="fx"></canvas>
+
+<!-- Gift screen -->
+<div id="gift">
+  <h2>Диляра, для тебя сюрприз!</h2>
+  <p>Кое-что особенное приготовлено именно тебе</p>
+  <button id="giftbox" aria-label="Открыть подарок">🎁</button>
+  <div class="tap">Нажми на подарок 💝</div>
+</div>
+
+<div class="bgfloat" id="bgfloat"></div>
+
+<main>
+<section id="hero">
+  <div class="date">🎂 11 ноября</div>
+  <h1>С Днём Рождения,<br>Диляра!</h1>
+  <div id="typed"></div>
+  <div class="scroll">⬇️</div>
+</section>
+
+<section class="reveal">
+  <h2 class="title">Лопни шарик — получи пожелание 🎈</h2>
+  <p class="sub">Каждый шарик хранит тёплые слова для тебя</p>
+  <div id="balloons"></div>
+  <div id="wish">Выбери любой шарик 👆</div>
+</section>
+
+<section class="reveal">
+  <h2 class="title">За что мы тебя любим 💖</h2>
+  <p class="sub">Переворачивай карточки</p>
+  <div class="cards" id="cards"></div>
+</section>
+
+<section class="reveal">
+  <h2 class="title">Наши лучшие моменты 📸</h2>
+  <p class="sub">Моменты, которые делают нашу жизнь ярче</p>
+  <div class="gallery" id="gallery"></div>
+</section>
+
+<section class="reveal">
+  <h2 class="title">Письмо для тебя 💌</h2>
+  <div class="letter">
+    <div class="script" id="l-greet"></div>
+    <div id="l-body"></div>
+    <div class="sign" id="l-sign"></div>
+  </div>
+</section>
+
+<section class="reveal">
+  <div id="cake">🎂</div>
+  <h2 class="title">И последний сюрприз…</h2>
+  <p class="sub">Нажми, если готова!</p>
+  <button class="big" id="finale">Загадай желание ✨</button>
+</section>
+</main>
+
+<footer>Сделано с огромной любовью ❤️</footer>
+
+<script>
+/* =====================================================
+   ✏️ ВСЁ, ЧТО НУЖНО ПОМЕНЯТЬ, — ВОТ ЗДЕСЬ
+   ===================================================== */
+const CONFIG = {
+  name: "Диляра",
+  from: "Твой(я) любимый(ая) ребёнок",           // подпись внизу письма
+  typed: "Ты самый тёплый, добрый и родной человек на свете. Этот день — только твой! 💐",
+
+  wishes: [
+    "Пусть каждый твой день будет наполнен радостью и улыбками 😊",
+    "Крепкого здоровья тебе, мамочка! Ты у нас одна 💪",
+    "Пусть сбываются все, даже самые смелые мечты ✨",
+    "Пусть дома всегда будет тепло и уютно 🏡",
+    "Больше путешествий, цветов и приятных сюрпризов 🌷",
+    "Пусть тебя окружают только любящие люди 💞",
+    "Спокойствия, счастья и лёгкости во всём 🕊️",
+    "Ты заслуживаешь самого лучшего — и вот оно! 🎁"
+  ],
+
+  reasons: [
+    "Ты всегда рядом, когда мне трудно",
+    "Твои объятия лечат всё",
+    "Ты готовишь самую вкусную еду на свете",
+    "Ты веришь в меня сильнее, чем я сам(а)",
+    "С тобой всегда можно поговорить по душам",
+    "У тебя самая красивая улыбка"
+  ],
+
+  // Положи фото в папку photos/ рядом с index.html: 1.jpg, 2.jpg, 3.jpg ...
+  // Пока фото нет — будут красивые заглушки.
+  photos: [
+    { src: "1.jpg", caption: "Вместе ❤️" },
+    { src: "2.jpg", caption: "Ты — солнышко" },
+    { src: "3.jpg", caption: "Наши улыбки" },
+    { src: "4.jpg", caption: "Наша семья" }
+  ],
+
+  letterGreeting: "Дорогая мамочка!",
+  letter:
+    "Сегодня твой день, и мне хочется сказать тебе спасибо. За бессонные ночи, за заботу, " +
+    "за каждый совет и за то, что ты всегда принимаешь меня таким(ой), какой(ая) я есть.<br><br>" +
+    "Ты — моя опора и моё сердце нашего дома. Я очень тебя люблю и желаю, " +
+    "чтобы счастья в твоей жизни было столько же, сколько ты дарила его нам.<br><br>" +
+    "С днём рождения! 🌸"
+};
+
+/* =====================================================
+   Код (можно не трогать)
+   ===================================================== */
+const $ = s => document.querySelector(s);
+const colors = ['#ff5d8f','#ff9a3c','#ffc857','#6ec6ff','#b388ff','#5ee0a0','#ff7eb3'];
+document.title = `С днём рождения, ${CONFIG.name}! 🎉`;
+
+/* ---- canvas particles ---- */
+const cv = $('#fx'), ctx = cv.getContext('2d');
+function resize(){cv.width = innerWidth; cv.height = innerHeight}
+resize(); addEventListener('resize', resize);
+let parts = [], running = false;
+
+function confetti(x, y, n = 120){
+  for(let i=0;i<n;i++){
+    const a = Math.random()*Math.PI*2, s = 4 + Math.random()*9;
+    parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-6,g:.22,life:110+Math.random()*60,
+      c:colors[Math.random()*colors.length|0],w:6+Math.random()*7,h:4+Math.random()*5,r:Math.random()*6,vr:(Math.random()-.5)*.4,type:'rect'});
+  }
+  loop();
+}
+function firework(x, y){
+  const c = colors[Math.random()*colors.length|0];
+  for(let i=0;i<70;i++){
+    const a = Math.PI*2*i/70, s = 2 + Math.random()*5;
+    parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,g:.05,life:70+Math.random()*30,c,w:3,h:3,r:0,vr:0,type:'dot'});
+  }
+  loop();
+}
+function hearts(n = 30){
+  for(let i=0;i<n;i++){
+    parts.push({x:Math.random()*cv.width,y:cv.height+20,vx:(Math.random()-.5)*2,vy:-3-Math.random()*5,g:-.01,life:200,
+      c:'#ff5d8f',w:18+Math.random()*22,h:0,r:0,vr:0,type:'heart'});
+  }
+  loop();
+}
+function loop(){
+  if(running) return; running = true;
+  (function frame(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    parts = parts.filter(p => p.life > 0 && p.y < cv.height + 60);
+    for(const p of parts){
+      p.vy += p.g; p.x += p.vx; p.y += p.vy; p.r += p.vr; p.life--;
+      ctx.globalAlpha = Math.min(1, p.life/40);
+      ctx.fillStyle = p.c;
+      if(p.type === 'rect'){
+        ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.r); ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h); ctx.restore();
+      } else if(p.type === 'dot'){
+        ctx.beginPath(); ctx.arc(p.x,p.y,p.w,0,7); ctx.fill();
+      } else {
+        ctx.font = p.w + 'px serif'; ctx.fillText('❤️', p.x, p.y);
+      }
+    }
+    ctx.globalAlpha = 1;
+    if(parts.length) requestAnimationFrame(frame); else { running = false; ctx.clearRect(0,0,cv.width,cv.height); }
+  })();
+}
+
+/* ---- background floating emojis ---- */
+(function(){
+  const box = $('#bgfloat'), em = ['💖','🌸','✨','🎈','🌷','💕'];
+  for(let i=0;i<22;i++){
+    const s = document.createElement('span');
+    s.textContent = em[i % em.length];
+    s.style.left = Math.random()*100 + '%';
+    s.style.fontSize = (14 + Math.random()*24) + 'px';
+    s.style.animationDuration = (10 + Math.random()*14) + 's';
+    s.style.animationDelay = (-Math.random()*20) + 's';
+    box.appendChild(s);
+  }
+})();
+
+/* ---- typewriter ---- */
+function typeWriter(){
+  const el = $('#typed'); let i = 0;
+  el.innerHTML = '<span id="tt"></span><span class="caret">&nbsp;</span>';
+  const tt = $('#tt');
+  (function step(){
+    if(i <= CONFIG.typed.length){ tt.textContent = CONFIG.typed.slice(0,i++); setTimeout(step, 45); }
+  })();
+}
+
+/* ---- open the gift ---- */
+$('#giftbox').addEventListener('click', e => {
+  const r = e.target.getBoundingClientRect();
+  confetti(r.left + r.width/2, r.top + r.height/2, 200);
+  setTimeout(() => confetti(innerWidth*.2, innerHeight*.5, 100), 250);
+  setTimeout(() => confetti(innerWidth*.8, innerHeight*.5, 100), 450);
+  $('#gift').classList.add('gone');
+  setTimeout(() => { $('#gift').style.display = 'none'; }, 1000);
+  setTimeout(typeWriter, 700);
+});
+
+/* ---- balloons ---- */
+const bal = $('#balloons'), wishBox = $('#wish');
+let wishIdx = 0;
+CONFIG.wishes.forEach((w, i) => {
+  const b = document.createElement('button');
+  b.className = 'balloon';
+  b.setAttribute('aria-label', 'Шарик с пожеланием');
+  const c = colors[i % colors.length];
+  b.style.background = c; b.style.color = c;
+  b.style.animationDelay = (i * .3) + 's';
+  b.addEventListener('click', () => {
+    const r = b.getBoundingClientRect();
+    confetti(r.left + r.width/2, r.top + r.height/2, 50);
+    b.classList.add('pop');
+    wishBox.style.opacity = 0;
+    setTimeout(() => { wishBox.textContent = w; wishBox.style.transition = 'opacity .4s'; wishBox.style.opacity = 1; }, 150);
+    if(bal.querySelectorAll('.balloon:not(.pop)').length === 0){
+      setTimeout(() => { wishBox.textContent = 'Все шарики лопнули, а любовь к тебе — безгранична 💖'; hearts(25); }, 900);
+    }
+  });
+  bal.appendChild(b);
+});
+
+/* ---- reasons ---- */
+const cards = $('#cards');
+CONFIG.reasons.forEach((t, i) => {
+  const d = document.createElement('div');
+  d.className = 'card';
+  d.innerHTML = `<div class="in"><div class="f">${['💖','🌹','🍰','🌟','🤗','😊'][i % 6]}</div><div class="b">${t}</div></div>`;
+  d.addEventListener('click', () => d.classList.toggle('flip'));
+  cards.appendChild(d);
+});
+
+/* ---- gallery ---- */
+const gal = $('#gallery'), phEmoji = ['🌸','🌷','💐','🌼'];
+CONFIG.photos.forEach((p, i) => {
+  const f = document.createElement('figure');
+  f.className = 'photo';
+  const img = new Image();
+  img.alt = p.caption; img.src = p.src;
+  img.onerror = () => {
+    const ph = document.createElement('div');
+    ph.className = 'ph'; ph.textContent = phEmoji[i % phEmoji.length];
+    img.replaceWith(ph);
+  };
+  f.appendChild(img);
+  f.insertAdjacentHTML('beforeend', `<figcaption>${p.caption}</figcaption>`);
+  gal.appendChild(f);
+});
+
+/* ---- letter ---- */
+$('#l-greet').textContent = CONFIG.letterGreeting;
+$('#l-body').innerHTML = CONFIG.letter;
+$('#l-sign').textContent = '— ' + CONFIG.from;
+
+/* ---- finale ---- */
+$('#finale').addEventListener('click', () => {
+  let n = 0;
+  const t = setInterval(() => {
+    firework(100 + Math.random()*(innerWidth-200), 80 + Math.random()*innerHeight*.5);
+    if(++n > 14) clearInterval(t);
+  }, 280);
+  hearts(40);
+  confetti(innerWidth/2, innerHeight/2, 250);
+  $('#finale').textContent = `С Днём Рождения, ${CONFIG.name}! 🥳`;
+});
+
+/* ---- scroll reveal ---- */
+const io = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) e.target.classList.add('show'); }), {threshold:.15});
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+</body>
+</html>
